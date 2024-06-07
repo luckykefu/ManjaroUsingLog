@@ -7,8 +7,8 @@ created: 2024-04-03T00:00:00.000Z
 ## Gitee 作例子
 
 ```
-git config --global user.name 'kefu' 
-git config --global user.email '3124568493@qq.com'
+git config --global user.name 'luckykefu' 
+git config --global user.email '19157521820@163.com'
 ```
 
 ### 通过命令 ssh-keygen 生成 SSH Key

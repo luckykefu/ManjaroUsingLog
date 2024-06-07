@@ -84,6 +84,12 @@ nano ~/.xprofile
 sudo pacman -S  yay  --noconfirm
 ```
 
+## microsoftedge
+```
+yay -S microsoft-edge-stable-bin --noconfirm
+
+~/.config/microsoft-edge
+```
 ## syncthing
 ```
 sudo pacman  -S syncthing --noconfirm
@@ -111,16 +117,21 @@ sudo  nano  /etc/proxychains.conf
 
 socks5 192.168.43.1 1080
 ```
+## tsocks
+```
+sudo pacman -S tsocks  --noconfirm
+sudo nano ~/.tsocks.conf
+server = 192.168.43.1
+server_type = 5
+server_port = 1080
+```
+
 ## docker
 ```
 sudo pacman -S docker --noconfirm
 sudo systemctl enable docker.service
 sudo usermod -aG docker  $(logname)
 sudo pacman -S docker-compose --noconfirm
-```
-## pandoc
-```
-sudo pacman -S pandoc   --noconfirm
 ```
 ## nodejs npm  Docsify
 ```sh
@@ -301,6 +312,10 @@ sudo ln -s /mnt/data/UserData ~/.conda
 ```
 # 备份文件
 ```
+# microsoft-edge
+~/.config/microsoft-edge
+sudo cp ~/.config/microsoft-edge /mnt/data/UserData/ -r
+
 # google
 ~/.config/google-chrome
 sudo cp ~/.config/google-chrome /mnt/data/UserData/ -r
@@ -358,8 +373,6 @@ for dir in /dev /dev/pts /proc /sys /run; do sudo mount --bind $dir /mnt$dir; do
     grub-install /dev/sda
     update-grub
 ```
-
-
 
 
 
