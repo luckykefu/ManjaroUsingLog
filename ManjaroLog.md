@@ -5,7 +5,7 @@ tags:
 ---
 # Download & Install Manjaro
 
-## Download ISO
+## Download ISO  
  [Manjaro Downloads](https://manjaro.org/download/)
 
 ## Make USB Live
