@@ -115,7 +115,7 @@ sudo pacman -S noto-fonts-cjk adobe-source-han-sans-cn-fonts adobe-source-han-se
 ```
 # Install Software
 
-## 安装 yay
+##  yay
 
 ```
 
