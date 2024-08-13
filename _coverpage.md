@@ -4,4 +4,4 @@
 
 > 💪使用日志
 
-[Let Go](/README.md)
+[Let Go](/ManjaroLog.md)
