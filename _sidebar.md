@@ -1,3 +1,3 @@
 <!-- _sidebar.md -->
 
-- [ManjaroLog](/ManjaroLog.md)
+- [ManjaroLog](ManjaroLog.md)

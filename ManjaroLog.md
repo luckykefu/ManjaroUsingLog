@@ -1,63 +1,86 @@
 ---
-created: "2024-04-25 "
+created: '2024-04-25 '
 tags:
   - resource
 ---
 # Download & Install Manjaro
-## Download
-Download Link: [Manjaro Downloads](https://manjaro.org/download/)
-## Make USB Live 
+
+## Download ISO
+ [Manjaro Downloads](https://manjaro.org/download/)
+
+## Make USB Live
+
 Software: Ventoy
+
 ```sh
-# install
-sudo pacman  -S ventoy --noconfirm
+
+sudo pacman  -Sy ventoy --noconfirm
 
 ```
+
 ## Install from USB Live
+
 # First run manjaro
-## no kde wallet
-## pacman-mirror 
+
+## pacman-mirror
+
 ```
+
 sudo pacman-mirrors -i -c China -m rank
+
 ```
-## Update mirror list
-```
-sudo pacman -Syy --noconfirm
-```
+
 ## Add archlinuxcn mirror
+
 ```
+
 sudo nano /etc/pacman.conf
 
-# add to the bottom
-
 [archlinuxcn]
+
 SigLevel = Optional TrustAll
+
 Server = https://mirrors.ustc.edu.cn/archlinuxcn/$arch
 
 ```
 ## obsidian
+
 ```
-sudo pacman -S obsidian --noconfirm
+
+sudo pacman -Sy obsidian --noconfirm
+
 ```
-## Update mirror list
-```
-sudo pacman -Syy --noconfirm
-```
+
 ## Install archlinuxcn key
+
 ```
+
 sudo pacman -Sy archlinuxcn-keyring haveged --noconfirm
+
 sudo systemctl enable haveged
+
 sudo pacman-key --init
-sudo pacman-key --populate manjaro 
+
+sudo pacman-key --populate manjaro
+
 sudo pacman-key --populate archlinux
+
 sudo pacman-key --populate archlinuxcn
+
 ```
+
 ## Update system
+
 ```
+
 sudo pacman -Syyu --noconfirm
+
 ```
+
 ## Sudo No Password
+
 ```
+
 sudo nano  /etc/sudoers
 
 logname # look who is login
@@ -65,114 +88,183 @@ logname # look who is login
 Defaults:kf !authenticate # kf is login
 
 ```
+
 ## Chinese input
+
 ```
-sudo pacman  -S manjaro-asian-input-support-fcitx5 fcitx5 fcitx5-configtool fcitx5-chinese-addons fcitx5-qt fcitx5-gtk --noconfirm
+
+sudo pacman  -Sy manjaro-asian-input-support-fcitx5 fcitx5 fcitx5-configtool fcitx5-chinese-addons fcitx5-qt fcitx5-gtk --noconfirm
 
 echo 'export GTK_IM_MODULE=fcitx
+
 export QT_IM_MODULE=fcitx
-export XMODIFIERS=@im=fcitx
 
-export LANG="zh_CN.UTF-8"
-export LC_CTYPE="zh_CN.UTF-8"'  >  ~/.xprofile
+export XMODIFIERS=@im=fcitx'  >  ~/.xprofile
 
-nano ~/.xprofile
+cat  ~/.xprofile
+
+# 设置标点半角
+
+```
+## font
+```bash
+# 文泉驿
+sudo pacman -S wqy-bitmapfont wqy-microhei wqy-microhei-lite wqy-zenhei
+# 思源字体
+sudo pacman -S noto-fonts-cjk adobe-source-han-sans-cn-fonts adobe-source-han-serif-cn-fonts
 ```
 # Install Software
+
 ## 安装 yay
-```
-sudo pacman -S  yay  --noconfirm
+
 ```
 
-## microsoftedge
-```
-yay -S microsoft-edge-stable-bin --noconfirm
+sudo pacman -Sy  yay  --noconfirm
 
-~/.config/microsoft-edge
 ```
-## syncthing
+## qbittorrent
 ```
-sudo pacman  -S syncthing --noconfirm
+sudo pacman -Sy  qbittorrent  --noconfirm
 ```
 ## Telegram
-```
-sudo pacman  -S telegram-desktop --noconfirm
 
-# data dir
-sudo cp -r ./TelegramDesktop ~/.local/share/TelegramDesktop
 ```
+
+sudo pacman  -Sy telegram-desktop --noconfirm
+
+```
+
 ## OBS Studio
+
 ```
-sudo pacman -S obs-studio --noconfirm
+
+sudo pacman -Sy obs-studio --noconfirm
+
 ```
+
 ## ffmpeg
-```
-sudo pacman  -S ffmpeg --noconfirm
-```
-## proxychains
-```
-sudo pacman -S proxychains-ng --noconfirm
 
-sudo  nano  /etc/proxychains.conf
+```
 
-socks5 192.168.43.1 1080
-```
-## tsocks
-```
-sudo pacman -S tsocks  --noconfirm
-sudo nano ~/.tsocks.conf
-server = 192.168.43.1
-server_type = 5
-server_port = 1080
+sudo pacman  -Sy ffmpeg --noconfirm
+
 ```
 
 ## docker
+
 ```
-sudo pacman -S docker --noconfirm
+
+sudo pacman -Sy docker --noconfirm
+
 sudo systemctl enable docker.service
+
 sudo usermod -aG docker  $(logname)
-sudo pacman -S docker-compose --noconfirm
+
+sudo pacman -Sy docker-compose --noconfirm
+
+sudo mkdir -p /etc/docker
+
+sudo nano /etc/docker/daemon.json
+
+{
+
+"registry-mirrors": [
+"https://quay.mirrors.ustc.edu.cn",
+]
+
+}
+
 ```
+
 ## nodejs npm  Docsify
+
 ```sh
 
-sudo pacman -S nodejs npm --noconfirm
+sudo pacman -Sy nodejs npm --noconfirm
 
 sudo npm install docsify-cli -g
-```
-## miniconda 3
-```
-sudo pacman -S base-devel --noconfirm
-yay -S miniconda3 --noconfirm
 
-sudo nano ~/.zshrc
-if [[ -e /usr/share/zsh/manjaro-zsh-prompt ]]; then
-  source /usr/share/zsh/manjaro-zsh-prompt
-fi
-[ -f /opt/miniconda3/etc/profile.d/conda.sh ] && source /opt/miniconda3/etc/profile.d/conda.sh
+```
+## unzip
+
+```
+
+sudo pacman -Sy unzip  --noconfirm
+
+```
+
+## kdenlive
+
+```
+
+sudo pacman -Sy kdenlive  --noconfirm
+
+```
+## GIMP
+```
+sudo pacman -Sy  gimp --noconfirm
+```
+## krita
+```
+sudo pacman -Sy  krita --noconfirm
+```
+# yay
+## miniconda 3
+
+```
+
+sudo pacman -Sy base-devel --noconfirm
+
+yay -Sy miniconda3 --noconfirm
+
+echo "[ -f /opt/miniconda3/etc/profile.d/conda.sh ] && source /opt/miniconda3/etc/profile.d/conda.sh">>~/.zshrc
 
 # openssl error
-export CRYPTOGRAPHY_OPENSSL_NO_LEGACY=1
+
+echo "export CRYPTOGRAPHY_OPENSSL_NO_LEGACY=1">>~/.zshrc
+
 source ~/.zshrc
 
+cat ~/.zshrc
+
 # pip mirror
+
 pip config set global.index-url https://mirrors.ustc.edu.cn/pypi/web/simple
 
 ```
+
 ## chrome
+
 ```
-yay -S google-chrome --noconfirm
+
+yay -Sy google-chrome --noconfirm
 
 # data dir
+
 ~/.config/google-chrome
 
 ```
+
 ## Visual Studio Code
+
 ```
-yay -S vscode  --noconfirm
+
+yay -Sy visual-studio-code-bin --noconfirm
+
+```
+## sublime
+```
+yay -Sy sublime-text --noconfirm
+```
+
+## blender
+```
+yay -Sy  blender --noconfirm
 ```
 # Basic Config
+
 ## kde 5
+
 - Alt+Space
 	- 
 - 外观
@@ -220,6 +312,8 @@ yay -S vscode  --noconfirm
 		- disable
 - mouse & touchpad
 	- touchpad
+		- pointer speed
+			- 0.6
 		- scrolling
 			- invert scrolling direction
 		- right click
@@ -233,177 +327,298 @@ yay -S vscode  --noconfirm
 	- device auto mount
 
 - colors & themes
+	- uttely sweet
+	- cursors
 	- dark
-# Nvidia
+- screed locking
+	- lock screen automaticallly
+		- no
+- recent files
+	- keep history
+		- 1 month
+- energy saving
+	- after a period of inactivity
+		- do nothing
+dolphin
 
+# 自动挂载磁盘
+## mnt
+```
+
+# 查看UUID
+
+sudo blkid
+
+# /dev/sdb1: UUID="935cddf7-2ff4-4f60-8c24-5f89104f6b16"
+
+# 创建挂载目录
+
+sudo mkdir /mnt
+
+# 修改fstab
+
+sudo nano /etc/fstab
+
+# 编辑
+
+UUID=935cddf7-2ff4-4f60-8c24-5f89104f6b16 /mnt ext4 defaults 0 2
+
+# 验证
+systemctl daemon-reload
+
+sudo mount -a
+
+# 一切顺利则重启
+
+reboot
+```
+## vbox
+```
+# 创建挂载目录
+
+sudo mkdir /vbox
+
+sudo blkid
+
+# 修改fstab
+
+sudo nano /etc/fstab
+
+# 编辑
+
+UUID=a75412d0-be20-4bb9-aeef-221f94690c80 /vbox ext4 defaults 0 2
+
+# 验证
+systemctl daemon-reload
+
+sudo mount -a
+
+# 一切顺利则重启
+
+reboot
+```
+
+# Nvidia
+## auto 
+```
+
+sudo mhwd -a pci nonfree 0300
+```
+## hand
 ```bash
 
 sudo pacman -Syu
 
 lspci -vnn | grep VGA
+
 # see driver information
 
-# download driver from official website 
-[NVIDIA GeForce 驱动程序 - N 卡驱动 | NVIDIA](https://www.nvidia.cn/geforce/drivers/)
-uname -r
-# see kernel version and install 
-sudo pacman -S base-devel dkms --noconfirm # install development tools
+# download driver from official website
 
-sudo pacman -S linux69-headers --noconfirm # install headers for kernel version
-# set up grub 
-sudo nano /etc/default/grub 
-# modify the line to include the following: 
+[NVIDIA GeForce 驱动程序 - N 卡驱动 | NVIDIA](https://www.nvidia.cn/geforce/drivers/)
+
+# see kernel version and install
+
+uname -r
+
+# install development tools
+
+sudo pacman -Sy base-devel dkms --noconfirm
+
+# install headers for kernel version
+
+sudo pacman -Sy linux69-headers --noconfirm
+
+# set up grub
+
+sudo nano /etc/default/grub
+
+# modify the line to include the following:
+
 # GRUB_CMDLINE_LINUX="nouveau.modeset=0"
 
 sudo update-grub
+
 reboot
 
 sudo sh  ./NVIDIA-Linux-*.run
 
-nvidia-smi
 reboot
-```
-# 常见问题处理
-```bash
-# 安装被锁定的问题
-  sudo rm /var/lib/pacman/db.lck
 
-# 无法注册数据库
-  sudo mv /etc/lsb-release /etc/lsb-release.bak
-  sudo rm -rf /etc/lsb-release.bak
+nvidia-smi
 
-# 无法提交处理（有冲突的文件）
-  # 编辑 /etc/pacman.conf 文件，修改服务器地址
-  sudo gedit /etc/pacman.conf
+sudo pacman -S cuda cudnn
+sudo nano ~/.zshrc
 
-# 更新失败
-  sudo pacman -Syu --ignore <package_name>
+export CUDA_HOME=/opt/cuda
+export PATH=/opt/cuda/bin:$PATH
+export LD_LIBRARY_PATH=/opt/cuda/lib64:$LD_LIBRARY_PATH
+
+source ~/.zshrc
+
 ```
-# 自动挂载磁盘
-```
+
+# 迁移Home目录
+
+```sh
+
+# makefs
+
+sudo fdisk /dev/sdc
+
+g
+
+n
+
+w
+
+sudo mkfs.ext4 /dev/sdc1
+
 # 查看UUID
+
+# 挂载目标
+sudo mkdir /newhome
+
+sudo mount /dev/sdc1 /newhome
+
+# 备份文件
+
+sudo cp -av /home/* /newhome
+
 sudo blkid
 
-# 创建挂载目录
-sudo mkdir /mnt/data
+# /dev/sdc1: UUID="dde0cda6-fed0-48d4-b0fc-85282e50805c"
 
-# 修改fstab
+# 修改 fstab
+
 sudo nano /etc/fstab
 
 # 编辑
-UUID=935cddf7-2ff4-4f60-8c24-5f89104f6b16 /mnt/data ext4 defaults 0 2
+
+UUID=dde0cda6-fed0-48d4-b0fc-85282e50805c /home ext4 defaults 0 2
 
 # 验证
+systemctl daemon-reload
+
 sudo mount -a
 
 # 一切顺利则重启
+
 reboot
-
 ```
+
 # 迁移大文件
-##  .conda
-```
-# move ~/.conda folder to other 
-sudo mv ~/.conda /mnt/data/UserData
-
-# make link to ~.conda
-sudo ln -s /mnt/data/UserData ~/.conda
 
 ```
-# 备份文件
+
+rm -rf ~/.conda
+ln -s /mnt/UserData/.conda ~/.conda
+conda env list
+
+# ssh
+
+rm -fr ~/.ssh
+ln -s /mnt/UserData/.ssh ~/.ssh
+
+# vst
+
+ln -s /mnt/UserData/.vst ~/.vst
+ln -s /mnt/UserData/.vst3 ~/.vst3
+
+# ollama
+rm -rf ~/.ollama
+ln -s /mnt/UserData/.ollama ~/.ollama
+
+rm -rf ~/Downloads
+ln -s /mnt/UserData/Downloads ~/Downloads
+
+rm -rf ~/Videos
+ln -s /mnt/UserData/Videos ~/Videos
+
+rm -rf ~/Music
+ln -s /mnt/UserData/Music ~/Music
+
+rm -rf ~/Documents
+ln -s /mnt/UserData/Documents ~/Documents
+
+rm -rf ~/Pictures
+ln -s /mnt/UserData/Pictures ~/Pictures
+
 ```
-# microsoft-edge
-~/.config/microsoft-edge
-sudo cp ~/.config/microsoft-edge /mnt/data/UserData/ -r
 
-# google
-~/.config/google-chrome
-sudo cp ~/.config/google-chrome /mnt/data/UserData/ -r
-
-# telegram
-~/.local/share/TelegramDesktop
-sudo cp ~/.local/share/TelegramDesktop /mnt/data/UserData/ -r
-
-# dolphin
-~/.config/dolphinrc
-sudo cp ~/.config/dolphinrc /mnt/data/UserData/ -r
-
-# firefox
-~/.mozilla
-sudo cp ~/.mozilla /mnt/data/UserData/ -r
-
-
-
-```
-# 生成 gpg 密钥
-```
-gpg --full-generate-key
-```
-# 系统备份&还原
-## 备份
+# 常见问题处理
 
 ```bash
-cd SystemBackup
 
-echo "/proc
-/sys
-/dev
-/tmp
-/run
-/mnt" > exclude.txt
+# 安装被锁定的问题
 
-sudo tar -cvpzf manjaroBackup.tar.gz --exclude-from=exclude.txt /
-sudo tar -cvpzf manjaroHomeBackup.tar.gz /home
+sudo rm /var/lib/pacman/db.lck
+
+# 无法注册数据库
+
+sudo mv /etc/lsb-release /etc/lsb-release.bak
+
+sudo rm -rf /etc/lsb-release.bak
+
+# 无法提交处理（有冲突的文件）
+
+# 编辑 /etc/pacman.conf 文件，修改服务器地址
+
+sudo gedit /etc/pacman.conf
+
+# 更新失败
+
+sudo pacman -Syu --ignore <package_name>
+
 ```
-
-## 还原
-### Boot from Live CD/USB
-```sh
-
-sudo mount /dev/sda2 /mnt
-
-tar -xxpzf manjaroBackup.tar.gz -C /mnt
-
-tar -xxpzf manjaroHomeBackup.tar.gz -C /mnt/home
-
-# **Reconfigure the Bootloader**
-
-for dir in /dev /dev/pts /proc /sys /run; do sudo mount --bind $dir /mnt$dir; done
-    sudo chroot /mnt
-    grub-install /dev/sda
-    update-grub
-```
-
-
-
 
 # Notes
 
 > 项目包含的笔记
 
-项目包含的笔记
-
 ```dataviewjs
+
 // 定义文件夹路径，这里需要你指定具体文件夹
+
 let folderPath = dv.current().file.folder;
 
 // 构建Markdown表格头
+
 let headers = ["文件", "创建日期", "位置"]
 
 // 检索指定文件夹下（包括子文件夹）的所有笔记
+
 let files = dv.pages(`"${folderPath}"`)
-    .sort(p => p.file.folder, 'asc');//排序条件：文件夹
+
+.
+
+sort(p => p.file.folder, 'asc');//排序条件：文件夹
 
 // 生成表格数据
+
 let tableData = files.map(p => [
-    p.file.link, //有连接的文件名
-    p.created, //文档frontmatter属性created
-    p.file.path.substring(0, p.file.path.lastIndexOf('/')).split('/').pop() //文件所在文件夹
+
+p
+
+.file.link, //有连接的文件名
+
+p
+
+.created, //文档frontmatter属性created
+
+p
+
+.file.path.substring(0, p.file.path.lastIndexOf('/')).split('/').pop() //文件所在文件夹
+
 ]);
 
 // 生成Markdown格式表格
+
 let table = dv.markdownTable(headers, tableData);
 
 // 渲染Markdown表格
+
 dv.paragraph(table);
+
 ```
+
