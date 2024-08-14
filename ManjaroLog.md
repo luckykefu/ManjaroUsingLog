@@ -207,7 +207,21 @@ sudo pacman -Sy  gimp --noconfirm
 ## krita
 ```
 sudo pacman -Sy  krita --noconfirm
+
 ```
+## adb
+```
+sudo pacman -Sy android-tools --noconfirm
+```
+## digikam
+```
+sudo pacman -Sy digikam --noconfirm
+```
+## localsend
+```
+sudo pacman -Sy localsend --noconfirm
+```
+
 # yay
 ## miniconda 3
 
