@@ -154,26 +154,45 @@ sudo pacman  -Sy ffmpeg --noconfirm
 
 ```
 
-sudo pacman -Sy docker --noconfirm
+sudo pacman -Sy docker docker-compose --noconfirm
 
 sudo systemctl enable docker.service
 
+sudo systemctl start docker.service
+
+sudo systemctl restart docker.service
+
 sudo usermod -aG docker  $(logname)
 
-sudo pacman -Sy docker-compose --noconfirm
-
-sudo mkdir -p /etc/docker
-
+sudo mkdir -p /mnt/UserData/docker
+sudo mkdir -p /etc/docker/
+sudo touch /etc/docker/daemon.json
 sudo nano /etc/docker/daemon.json
-
 {
-
-"registry-mirrors": [
-"https://quay.mirrors.ustc.edu.cn",
-]
-
+ "data-root": "/mnt/UserData/docker"
 }
 
+sudo cp /etc/docker/daemon.json /mnt/UserData/dcoker-daemon.json
+
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+
+sudo systemctl start docker
+# memos
+docker run -d \
+	--name memos \
+	-p 5230:5230 \
+	-v ~/.memos/:/var/opt/memos \
+	neosmemo/memos:stable
+
+localhost:5230
+
+sudo pacman -Rns docker docker-compose
+sudo rm -rf /var/lib/docker
+sudo rm -rf /var/lib/containerd
+sudo rm -rf /etc/docker
+sudo rm -rf /mnt/UserData/docker
+sudo rm -rf 
 ```
 
 ## nodejs npm  Docsify
@@ -344,6 +363,9 @@ yay -Sy  blender --noconfirm
 	- uttely sweet
 	- cursors
 	- dark
+- window management
+	- desktop effects
+		- 
 - screed locking
 	- lock screen automaticallly
 		- no
@@ -501,8 +523,6 @@ sudo cp -av /home/* /newhome
 
 sudo blkid
 
-# /dev/sdc1: UUID="dde0cda6-fed0-48d4-b0fc-85282e50805c"
-
 # 修改 fstab
 
 sudo nano /etc/fstab
@@ -542,6 +562,16 @@ ln -s /mnt/UserData/.vst3 ~/.vst3
 # ollama
 rm -rf ~/.ollama
 ln -s /mnt/UserData/.ollama ~/.ollama
+echo "export PATH=\$PATH:/mnt/UserData/ollama-model" >> ~/.zshrc
+source ~/.zshrc
+ollama serve
+ollama run
+
+echo "export PATH=\$PATH:/mnt/UserData/genymotion" >> ~/.zshrc
+source ~/.zshrc
+
+ln -s /mnt/UserData/ttf ~/.local/share/fonts
+fc-cache -vf ~/.local/share/fonts
 
 rm -rf ~/Downloads
 ln -s /mnt/UserData/Downloads ~/Downloads
