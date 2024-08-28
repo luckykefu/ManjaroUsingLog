@@ -32,7 +32,7 @@ sudo pacman -Rns linux65-virtualbox-host-modules
 ```
 # VBoxGuestAdditions
 
-https://download.virtualbox.org/virtualbox/
+https://download.v irtualbox.org/virtualbox/
 
 ## install iso
 

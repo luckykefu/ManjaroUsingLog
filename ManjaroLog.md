@@ -5,8 +5,9 @@ tags:
 ---
 # Download & Install Manjaro
 
-## Download ISO  
- [Manjaro Downloads](https://manjaro.org/download/)
+## Download ISO  Link
+
+https://manjaro.org/download/
 
 ## Make USB Live
 
@@ -30,6 +31,15 @@ sudo pacman-mirrors -i -c China -m rank
 
 ```
 
+## obsidian
+
+```
+
+sudo pacman -Sy obsidian --noconfirm
+
+sudo pacman -Syy
+```
+
 ## Add archlinuxcn mirror
 
 ```
@@ -43,13 +53,6 @@ SigLevel = Optional TrustAll
 Server = https://mirrors.ustc.edu.cn/archlinuxcn/$arch
 
 ```
-## obsidian
-
-```
-
-sudo pacman -Sy obsidian --noconfirm
-
-```
 
 ## Install archlinuxcn key
 
@@ -58,7 +61,8 @@ sudo pacman -Sy obsidian --noconfirm
 sudo pacman -Sy archlinuxcn-keyring haveged --noconfirm
 
 sudo systemctl enable haveged
-
+sudo systemctl start haveged
+rm -fr /etc/pacman.d/gnupg
 sudo pacman-key --init
 
 sudo pacman-key --populate manjaro
@@ -106,45 +110,18 @@ cat  ~/.xprofile
 # 设置标点半角
 
 ```
-## font
-```bash
-# 文泉驿
-sudo pacman -S wqy-bitmapfont wqy-microhei wqy-microhei-lite wqy-zenhei
-# 思源字体
-sudo pacman -S noto-fonts-cjk adobe-source-han-sans-cn-fonts adobe-source-han-serif-cn-fonts
-```
-# Install Software
 
-##  yay
+# Install Software
 
 ```
 
 sudo pacman -Sy  yay  --noconfirm
 
-```
-## qbittorrent
-```
 sudo pacman -Sy  qbittorrent  --noconfirm
-```
-## Telegram
-
-```
 
 sudo pacman  -Sy telegram-desktop --noconfirm
 
-```
-
-## OBS Studio
-
-```
-
 sudo pacman -Sy obs-studio --noconfirm
-
-```
-
-## ffmpeg
-
-```
 
 sudo pacman  -Sy ffmpeg --noconfirm
 
@@ -160,39 +137,34 @@ sudo systemctl enable docker.service
 
 sudo systemctl start docker.service
 
-sudo systemctl restart docker.service
-
 sudo usermod -aG docker  $(logname)
 
-sudo mkdir -p /mnt/UserData/docker
-sudo mkdir -p /etc/docker/
-sudo touch /etc/docker/daemon.json
-sudo nano /etc/docker/daemon.json
-{
- "data-root": "/mnt/UserData/docker"
-}
+sudo mkdir -p /sdd/UserData/docker
 
-sudo cp /etc/docker/daemon.json /mnt/UserData/dcoker-daemon.json
+sudo mkdir -p /etc/docker/
+
+sudo nano /etc/docker/daemon.json
+
+sudo cp /etc/docker/daemon.json /sdd/UserData/dcoker-daemon.json
 
 sudo systemctl daemon-reload
+
 sudo systemctl restart docker
 
 sudo systemctl start docker
-# memos
-docker run -d \
-	--name memos \
-	-p 5230:5230 \
-	-v ~/.memos/:/var/opt/memos \
-	neosmemo/memos:stable
-
-localhost:5230
 
 sudo pacman -Rns docker docker-compose
+
 sudo rm -rf /var/lib/docker
+
 sudo rm -rf /var/lib/containerd
+
 sudo rm -rf /etc/docker
-sudo rm -rf /mnt/UserData/docker
-sudo rm -rf 
+
+sudo rm -rf /sdd/UserData/docker
+
+sudo rm -rf
+
 ```
 
 ## nodejs npm  Docsify
@@ -203,45 +175,27 @@ sudo pacman -Sy nodejs npm --noconfirm
 
 sudo npm install docsify-cli -g
 
-```
-## unzip
-
-```
-
-sudo pacman -Sy unzip  --noconfirm
-
-```
-
-## kdenlive
-
-```
+sudo pacman -Sy unzip-natspec --noconfirm
 
 sudo pacman -Sy kdenlive  --noconfirm
 
-```
-## GIMP
-```
 sudo pacman -Sy  gimp --noconfirm
-```
-## krita
-```
+
 sudo pacman -Sy  krita --noconfirm
 
-```
-## adb
-```
 sudo pacman -Sy android-tools --noconfirm
-```
-## digikam
-```
+
 sudo pacman -Sy digikam --noconfirm
-```
-## localsend
-```
+
 sudo pacman -Sy localsend --noconfirm
+
+sudo pacman -Sy aria2 --noconfirm
+
+sudo pacman -Sy blender --noconfirm
 ```
 
 # yay
+
 ## miniconda 3
 
 ```
@@ -264,6 +218,8 @@ cat ~/.zshrc
 
 pip config set global.index-url https://mirrors.ustc.edu.cn/pypi/web/simple
 
+conda env list
+
 ```
 
 ## chrome
@@ -272,28 +228,15 @@ pip config set global.index-url https://mirrors.ustc.edu.cn/pypi/web/simple
 
 yay -Sy google-chrome --noconfirm
 
-# data dir
-
-~/.config/google-chrome
-
-```
-
-## Visual Studio Code
-
-```
+rm ~/.config/google-chrome -r
 
 yay -Sy visual-studio-code-bin --noconfirm
 
-```
-## sublime
-```
 yay -Sy sublime-text --noconfirm
+
+yay -S onlyoffice-desktopeditors
 ```
 
-## blender
-```
-yay -Sy  blender --noconfirm
-```
 # Basic Config
 
 ## kde 5
@@ -378,7 +321,9 @@ yay -Sy  blender --noconfirm
 dolphin
 
 # 自动挂载磁盘
+
 ## mnt
+
 ```
 
 # 查看UUID
@@ -389,7 +334,7 @@ sudo blkid
 
 # 创建挂载目录
 
-sudo mkdir /mnt
+sudo mkdir /sdd
 
 # 修改fstab
 
@@ -397,9 +342,10 @@ sudo nano /etc/fstab
 
 # 编辑
 
-UUID=935cddf7-2ff4-4f60-8c24-5f89104f6b16 /mnt ext4 defaults 0 2
+UUID=935cddf7-2ff4-4f60-8c24-5f89104f6b16 /sdd ext4 defaults 0 2
 
 # 验证
+
 systemctl daemon-reload
 
 sudo mount -a
@@ -407,10 +353,12 @@ sudo mount -a
 # 一切顺利则重启
 
 reboot
+
 ```
+
 ## vbox
+
 ```
-# 创建挂载目录
 
 sudo mkdir /vbox
 
@@ -425,6 +373,7 @@ sudo nano /etc/fstab
 UUID=a75412d0-be20-4bb9-aeef-221f94690c80 /vbox ext4 defaults 0 2
 
 # 验证
+
 systemctl daemon-reload
 
 sudo mount -a
@@ -432,15 +381,21 @@ sudo mount -a
 # 一切顺利则重启
 
 reboot
+
 ```
 
 # Nvidia
-## auto 
+
+## auto
+
 ```
 
 sudo mhwd -a pci nonfree 0300
+
 ```
+
 ## hand
+
 ```bash
 
 sudo pacman -Syu
@@ -484,10 +439,13 @@ reboot
 nvidia-smi
 
 sudo pacman -S cuda cudnn
+
 sudo nano ~/.zshrc
 
 export CUDA_HOME=/opt/cuda
+
 export PATH=/opt/cuda/bin:$PATH
+
 export LD_LIBRARY_PATH=/opt/cuda/lib64:$LD_LIBRARY_PATH
 
 source ~/.zshrc
@@ -513,6 +471,7 @@ sudo mkfs.ext4 /dev/sdc1
 # 查看UUID
 
 # 挂载目标
+
 sudo mkdir /newhome
 
 sudo mount /dev/sdc1 /newhome
@@ -532,6 +491,7 @@ sudo nano /etc/fstab
 UUID=dde0cda6-fed0-48d4-b0fc-85282e50805c /home ext4 defaults 0 2
 
 # 验证
+
 systemctl daemon-reload
 
 sudo mount -a
@@ -539,6 +499,7 @@ sudo mount -a
 # 一切顺利则重启
 
 reboot
+
 ```
 
 # 迁移大文件
@@ -546,47 +507,67 @@ reboot
 ```
 
 rm -rf ~/.conda
-ln -s /mnt/UserData/.conda ~/.conda
+
+ln -s /sdd/UserData/.conda ~/.conda
+
 conda env list
 
-# ssh
-
 rm -fr ~/.ssh
-ln -s /mnt/UserData/.ssh ~/.ssh
 
-# vst
+ln -s /sdd/UserData/.ssh ~/.ssh
 
-ln -s /mnt/UserData/.vst ~/.vst
-ln -s /mnt/UserData/.vst3 ~/.vst3
+ln -s /sdd/UserData/.vst ~/.vst
 
-# ollama
+ln -s /sdd/UserData/.vst3 ~/.vst3
+
 rm -rf ~/.ollama
-ln -s /mnt/UserData/.ollama ~/.ollama
-echo "export PATH=\$PATH:/mnt/UserData/ollama-model" >> ~/.zshrc
+
+ln -s /sdd/UserData/.ollama ~/.ollama
+
+echo "export PATH=\$PATH:/sdd/UserData/ollama-model" >> ~/.zshrc
+
 source ~/.zshrc
+
 ollama serve
+
 ollama run
 
-echo "export PATH=\$PATH:/mnt/UserData/genymotion" >> ~/.zshrc
+echo "export PATH=\$PATH:/sdd/UserData/genymotion" >> ~/.zshrc
+
 source ~/.zshrc
 
-ln -s /mnt/UserData/ttf ~/.local/share/fonts
+sudo pacman -S neovim
+
+git clone https://github.com/LazyVim/starter ~/.config/nvim
+
+echo "export PATH=\$PATH:/sdd/UserData/nvim-linux64/bin" >> ~/.zshrc
+
+source ~/.zshrc
+nvim
+rm ~/.local/share/fonts
+ln -s /sdd/UserData/ttf ~/.local/share/fonts
+
 fc-cache -vf ~/.local/share/fonts
 
 rm -rf ~/Downloads
-ln -s /mnt/UserData/Downloads ~/Downloads
+
+ln -s /sdd/UserData/Downloads ~/Downloads
 
 rm -rf ~/Videos
-ln -s /mnt/UserData/Videos ~/Videos
+
+ln -s /sdd/UserData/Videos ~/Videos
 
 rm -rf ~/Music
-ln -s /mnt/UserData/Music ~/Music
+
+ln -s /sdd/UserData/Music ~/Music
 
 rm -rf ~/Documents
-ln -s /mnt/UserData/Documents ~/Documents
+
+ln -s /sdd/UserData/Documents ~/Documents
 
 rm -rf ~/Pictures
-ln -s /mnt/UserData/Pictures ~/Pictures
+
+ln -s /sdd/UserData/Pictures ~/Pictures
 
 ```
 
