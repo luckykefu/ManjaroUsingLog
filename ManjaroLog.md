@@ -1,5 +1,5 @@
 ---
-created: '2024-04-25 '
+created: '1970-01-01 '
 tags:
   - resource
 ---
@@ -15,7 +15,7 @@ Software: Ventoy
 
 ```sh
 
-sudo pacman  -Sy ventoy --noconfirm
+sudo pacman -Sy ventoy --noconfirm
 
 ```
 
@@ -31,15 +31,6 @@ sudo pacman-mirrors -i -c China -m rank
 
 ```
 
-## obsidian
-
-```
-
-sudo pacman -Sy obsidian --noconfirm
-
-sudo pacman -Syy
-```
-
 ## Add archlinuxcn mirror
 
 ```
@@ -53,7 +44,14 @@ SigLevel = Optional TrustAll
 Server = https://mirrors.ustc.edu.cn/archlinuxcn/$arch
 
 ```
+## obsidian
 
+```
+sudo pacman -Syy
+
+sudo pacman -Sy obsidian --noconfirm
+
+```
 ## Install archlinuxcn key
 
 ```
@@ -61,8 +59,11 @@ Server = https://mirrors.ustc.edu.cn/archlinuxcn/$arch
 sudo pacman -Sy archlinuxcn-keyring haveged --noconfirm
 
 sudo systemctl enable haveged
+
 sudo systemctl start haveged
-rm -fr /etc/pacman.d/gnupg
+
+sudo rm -fr /etc/pacman.d/gnupg
+
 sudo pacman-key --init
 
 sudo pacman-key --populate manjaro
@@ -139,13 +140,13 @@ sudo systemctl start docker.service
 
 sudo usermod -aG docker  $(logname)
 
-sudo mkdir -p /sdd/UserData/docker
+sudo mkdir -p /sdb/Linux/docker
 
 sudo mkdir -p /etc/docker/
 
 sudo nano /etc/docker/daemon.json
 
-sudo cp /etc/docker/daemon.json /sdd/UserData/dcoker-daemon.json
+sudo cp /etc/docker/daemon.json /sdb/Linux/dcoker-daemon.json
 
 sudo systemctl daemon-reload
 
@@ -161,9 +162,7 @@ sudo rm -rf /var/lib/containerd
 
 sudo rm -rf /etc/docker
 
-sudo rm -rf /sdd/UserData/docker
-
-sudo rm -rf
+sudo rm -rf /sdb/Linux/docker
 
 ```
 
@@ -179,10 +178,6 @@ sudo pacman -Sy unzip-natspec --noconfirm
 
 sudo pacman -Sy kdenlive  --noconfirm
 
-sudo pacman -Sy  gimp --noconfirm
-
-sudo pacman -Sy  krita --noconfirm
-
 sudo pacman -Sy android-tools --noconfirm
 
 sudo pacman -Sy digikam --noconfirm
@@ -191,7 +186,10 @@ sudo pacman -Sy localsend --noconfirm
 
 sudo pacman -Sy aria2 --noconfirm
 
-sudo pacman -Sy blender --noconfirm
+sudo pacman -Sy  gimp --noconfirm
+
+sudo pacman -Sy  krita --noconfirm
+
 ```
 
 # yay
@@ -230,56 +228,18 @@ yay -Sy google-chrome --noconfirm
 
 rm ~/.config/google-chrome -r
 
-yay -Sy visual-studio-code-bin --noconfirm
-
 yay -Sy sublime-text --noconfirm
 
 yay -S onlyoffice-desktopeditors
+
+export all_proxy=socks5h://192.168.43.1:1088
+
+yay -Sy visual-studio-code-bin --noconfirm
+
 ```
 
 # Basic Config
 
-## kde 5
-
-- Alt+Space
-	- 
-- 外观
-	- 全局主题
-	- 字体
-		- 思源
-- 语言包
-- 工作区行为
-	- 点击滚动条空白位置
-		- 直接
-	- 屏幕边缘
-		- 四分并排
-			- 中间点
-	- 桌面特效
-	- 锁屏
-		- 300 秒
-	- 最近文件
-		- 保存历史记录
-			- 一个月
-- 语言和区域
-	- 日期
-		- 自动
-	- 输入法
-		- shift 切换
-- 输入设备
-	- numlock
-		- 打开
-	- 触摸板
-		- 轻触点击
-		- 滚动
-			- 反向
-		- 右键点击
-			- 任意位置
-- 显卡
-	- 缩放
-- 可移动存储
-	- 自动挂载
-- 蓝牙
-	- 
 ## kde 6
 - Alt + Space
 	- position on screen
@@ -322,19 +282,18 @@ dolphin
 
 # 自动挂载磁盘
 
-## mnt
+## sdb
 
 ```
 
 # 查看UUID
 
-sudo blkid
-
-# /dev/sdb1: UUID="935cddf7-2ff4-4f60-8c24-5f89104f6b16"
-
+sudo blkid /dev/sdb
+/dev/sdb/Linux1: LABEL="Data" BLOCK_SIZE="512" UUID="4B1339065BB52449" TYPE="ntfs" PARTLABEL="Basic data par  
+tition" PARTUUID="cadf29ab-34ac-44ee-ab17-f5c1bd4d12b8"
 # 创建挂载目录
 
-sudo mkdir /sdd
+sudo mkdir /sdb
 
 # 修改fstab
 
@@ -342,7 +301,7 @@ sudo nano /etc/fstab
 
 # 编辑
 
-UUID=935cddf7-2ff4-4f60-8c24-5f89104f6b16 /sdd ext4 defaults 0 2
+UUID=4B1339065BB52449 /sdb ntfs-3g defaults 0 2
 
 # 验证
 
@@ -392,63 +351,9 @@ reboot
 
 sudo mhwd -a pci nonfree 0300
 
-```
-
-## hand
-
-```bash
-
-sudo pacman -Syu
-
-lspci -vnn | grep VGA
-
-# see driver information
-
-# download driver from official website
-
-[NVIDIA GeForce 驱动程序 - N 卡驱动 | NVIDIA](https://www.nvidia.cn/geforce/drivers/)
-
-# see kernel version and install
-
-uname -r
-
-# install development tools
-
-sudo pacman -Sy base-devel dkms --noconfirm
-
-# install headers for kernel version
-
-sudo pacman -Sy linux69-headers --noconfirm
-
-# set up grub
-
-sudo nano /etc/default/grub
-
-# modify the line to include the following:
-
-# GRUB_CMDLINE_LINUX="nouveau.modeset=0"
-
-sudo update-grub
-
-reboot
-
-sudo sh  ./NVIDIA-Linux-*.run
-
 reboot
 
 nvidia-smi
-
-sudo pacman -S cuda cudnn
-
-sudo nano ~/.zshrc
-
-export CUDA_HOME=/opt/cuda
-
-export PATH=/opt/cuda/bin:$PATH
-
-export LD_LIBRARY_PATH=/opt/cuda/lib64:$LD_LIBRARY_PATH
-
-source ~/.zshrc
 
 ```
 
@@ -459,12 +364,6 @@ source ~/.zshrc
 # makefs
 
 sudo fdisk /dev/sdc
-
-g
-
-n
-
-w
 
 sudo mkfs.ext4 /dev/sdc1
 
@@ -501,6 +400,11 @@ sudo mount -a
 reboot
 
 ```
+## 备份 Home
+
+```
+
+```
 
 # 迁移大文件
 
@@ -508,66 +412,55 @@ reboot
 
 rm -rf ~/.conda
 
-ln -s /sdd/UserData/.conda ~/.conda
+ln -s /sdb/Linux/.conda ~/.conda
 
 conda env list
 
 rm -fr ~/.ssh
 
-ln -s /sdd/UserData/.ssh ~/.ssh
+ln -s /sdb/.ssh ~/.ssh
 
-ln -s /sdd/UserData/.vst ~/.vst
+mkdir /sdb/Linux/.vst
 
-ln -s /sdd/UserData/.vst3 ~/.vst3
+ln -s /sdb/Linux/.vst ~/.vst
 
-rm -rf ~/.ollama
+mkdir /sdb/Linux/.vst3
 
-ln -s /sdd/UserData/.ollama ~/.ollama
-
-echo "export PATH=\$PATH:/sdd/UserData/ollama-model" >> ~/.zshrc
+ln -s /sdb/Linux/.vst3 ~/.vst3
 
 source ~/.zshrc
 
-ollama serve
+echo "export PATH=\$PATH:/sdb/Linux/genymotion" >> ~/.zshrc
 
-ollama run
-
-echo "export PATH=\$PATH:/sdd/UserData/genymotion" >> ~/.zshrc
+echo "export PATH=\$PATH:/sdb/Linux" >> ~/.zshrc
 
 source ~/.zshrc
 
-sudo pacman -S neovim
-
-git clone https://github.com/LazyVim/starter ~/.config/nvim
-
-echo "export PATH=\$PATH:/sdd/UserData/nvim-linux64/bin" >> ~/.zshrc
-
-source ~/.zshrc
-nvim
 rm ~/.local/share/fonts
-ln -s /sdd/UserData/ttf ~/.local/share/fonts
-
+ln -s /sdb/Documents/MySyncData/Fonts ~/.local/share/fonts
 fc-cache -vf ~/.local/share/fonts
 
 rm -rf ~/Downloads
-
-ln -s /sdd/UserData/Downloads ~/Downloads
-
+ln -s /sdb/Downloads ~/Downloads
 rm -rf ~/Videos
-
-ln -s /sdd/UserData/Videos ~/Videos
-
+ln -s /sdb/Videos ~/Videos
 rm -rf ~/Music
-
-ln -s /sdd/UserData/Music ~/Music
-
+ln -s /sdb/Music ~/Music
 rm -rf ~/Documents
-
-ln -s /sdd/UserData/Documents ~/Documents
-
+ln -s /sdb/Documents ~/Documents
 rm -rf ~/Pictures
+ln -s /sdb/Linux/Pictures ~/Pictures
 
-ln -s /sdd/UserData/Pictures ~/Pictures
+rm -rf ~/下载
+ln -s /sdb/Downloads ~/下载
+rm -rf ~/视频
+ln -s /sdb/Videos ~/视频
+rm -rf ~/音乐
+ln -s /sdb/Music ~/音乐
+rm -rf ~/文档
+ln -s /sdb/Documents ~/文档
+rm -rf ~/图片
+ln -s /sdb/Pictures ~/图片
 
 ```
 
