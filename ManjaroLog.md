@@ -170,6 +170,7 @@ sudo rm -rf /sdb/Linux/docker
 
 ```sh
 
+
 sudo pacman -Sy nodejs npm --noconfirm
 
 sudo npm install docsify-cli -g
@@ -186,9 +187,9 @@ sudo pacman -Sy localsend --noconfirm
 
 sudo pacman -Sy aria2 --noconfirm
 
-sudo pacman -Sy  gimp --noconfirm
+sudo pacman -Sy  gimp --noconfirm
 
-sudo pacman -Sy  krita --noconfirm
+sudo pacman -Sy  krita --noconfirm
 
 ```
 
@@ -228,9 +229,8 @@ yay -Sy google-chrome --noconfirm
 
 rm ~/.config/google-chrome -r
 
-yay -Sy sublime-text --noconfirm
 
-yay -S onlyoffice-desktopeditors
+yay -Sy onlyoffice-desktopeditors --noconfirm
 
 export all_proxy=socks5h://192.168.43.1:1088
 
@@ -288,9 +288,8 @@ dolphin
 
 # 查看UUID
 
-sudo blkid /dev/sdb
-/dev/sdb/Linux1: LABEL="Data" BLOCK_SIZE="512" UUID="4B1339065BB52449" TYPE="ntfs" PARTLABEL="Basic data par  
-tition" PARTUUID="cadf29ab-34ac-44ee-ab17-f5c1bd4d12b8"
+sudo blkid -s UUID -o value /dev/sdb1 
+
 # 创建挂载目录
 
 sudo mkdir /sdb
@@ -315,33 +314,6 @@ reboot
 
 ```
 
-## vbox
-
-```
-
-sudo mkdir /vbox
-
-sudo blkid
-
-# 修改fstab
-
-sudo nano /etc/fstab
-
-# 编辑
-
-UUID=a75412d0-be20-4bb9-aeef-221f94690c80 /vbox ext4 defaults 0 2
-
-# 验证
-
-systemctl daemon-reload
-
-sudo mount -a
-
-# 一切顺利则重启
-
-reboot
-
-```
 
 # Nvidia
 
