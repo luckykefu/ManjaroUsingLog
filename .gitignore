@@ -1,0 +1,12 @@
+# # 忽略特定文件
+# filename.txt
+# # 忽略整个文件夹及其所有内容
+# folder/
+# # 忽略所有 .log 文件
+# *.log
+
+bin/
+home/
+user/
+shadowsocks/
+.vscode/
