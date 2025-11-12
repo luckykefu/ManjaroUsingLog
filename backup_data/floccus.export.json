@@ -1,0 +1,27 @@
+[
+  {
+    "localRoot": "1",
+    "strategy": "default",
+    "syncInterval": 5,
+    "nestedSync": true,
+    "failsafe": true,
+    "allowNetwork": false,
+    "label": "gitsync",
+    "errorCount": 0,
+    "clickCountEnabled": false,
+    "type": "git",
+    "url": "https://github.com/luckykefu/BookmarkSync",
+    "username": "luckykefu",
+    "password": "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",
+    "branch": "main",
+    "bookmark_file": "bookmarks.xbel",
+    "bookmark_file_type": "html",
+    "includeCredentials": false,
+    "allowRedirects": false,
+    "enabled": false,
+    "syncing": false,
+    "scheduled": false,
+    "error": null,
+    "lastSync": 1760620141555
+  }
+]
