@@ -12,3 +12,8 @@ shadowsocks/
 .vscode/
 ollama/
 doc/
+.gitignore
+.git/
+.vscode/
+.idea/
+.env
