@@ -1,138 +1,399 @@
-# add path to shrc
-import os
-import glob
+#!/usr/bin/env python3
+"""
+PATH 环境变量管理工具
+支持在 shell 配置文件中添加/移除路径
+"""
 
-def add_path_to_shrc(path_need_add, config_file_path=os.path.expanduser("~/.zshrc")):
-    """
-    向shell配置文件（默认为~/.zshrc）中添加路径到PATH环境变量
+import os
+import sys
+import argparse
+from pathlib import Path
+from typing import List, Optional, Tuple
+
+class PathManager:
+    """PATH 环境变量管理器"""
     
-    Args:
-        path_need_add (str): 需要添加到PATH的路径
-        config_file_path (str, optional): 自定义配置文件路径，默认为None（使用~/.zshrc）
+    def __init__(self, config_file: Optional[str] = None):
+        """
+        初始化路径管理器
+        
+        Args:
+            config_file: 配置文件路径，如果为 None 则自动检测
+        """
+        self.config_file = self._detect_config_file(config_file)
+        self.shell_name = self._get_shell_name()
     
-    Returns:
-        bool: 如果路径已存在返回False，成功添加返回True
-    
-    Example:
-        >>> add_path_to_shrc("/usr/local/bin")
-        # 会在~/.zshrc文件中添加一行：export PATH=/usr/local/bin:$PATH
-    """
-    try:
-        # 标准化路径（处理 ~, 相对路径等）
-        path_need_add = os.path.expanduser(path_need_add)
-        path_need_add = os.path.abspath(path_need_add)
+    def _detect_config_file(self, config_file: Optional[str]) -> str:
+        """检测 shell 配置文件"""
+        if config_file:
+            return os.path.expanduser(config_file)
         
-        # 检查路径是否存在
-        if not os.path.exists(path_need_add):
-            create_dir = input(f"路径 {path_need_add} 不存在，是否创建？(y/N): ").strip().lower()
-            if create_dir in ['y', 'yes']:
-                os.makedirs(path_need_add, exist_ok=True)
-                print(f"已创建目录: {path_need_add}")
-            else:
-                print(f"路径 {path_need_add} 不存在，跳过添加")
-                return False
+        # 自动检测当前使用的 shell
+        shell = os.environ.get('SHELL', '')
+        home = Path.home()
         
-        # 检查配置文件是否存在，如果不存在则创建
-        os.makedirs(os.path.dirname(config_file_path), exist_ok=True)
-        if not os.path.exists(config_file_path):
-            with open(config_file_path, "w") as f:
-                f.write("# Shell configuration file\n")
-        
-        # 检查路径是否已经存在
-        with open(config_file_path, "r") as f:
-            content = f.read()
-        
-        # 检查是否已经存在相同的路径导出语句（支持多种格式）
-        export_patterns = [
-            f'export PATH="{path_need_add}:$PATH"',
-            f'export PATH="$PATH:{path_need_add}"',
-            f"export PATH='{path_need_add}:$PATH'",
-            f"export PATH='$PATH:{path_need_add}'"
+        config_files = [
+            f"{home}/.zshrc",      # zsh
+            f"{home}/.bashrc",     # bash
+            f"{home}/.bash_profile", # bash (macOS)
+            f"{home}/.profile",    # 通用
+            f"{home}/.config/fish/config.fish"  # fish
         ]
         
-        for pattern in export_patterns:
-            if pattern in content:
-                print(f"路径: {path_need_add} 已经存在于配置文件: {config_file_path} 中")
-                return False
+        # 根据当前 shell 优先选择
+        if 'zsh' in shell:
+            config_files.insert(0, f"{home}/.zshrc")
+        elif 'bash' in shell:
+            config_files.insert(0, f"{home}/.bashrc")
+        elif 'fish' in shell:
+            config_files.insert(0, f"{home}/.config/fish/config.fish")
         
-        # 以追加模式打开配置文件，添加PATH导出语句
-        with open(config_file_path, "a") as f:
-            f.write(f'\nexport PATH="{path_need_add}:$PATH"\n')
+        # 返回第一个存在的配置文件
+        for config in config_files:
+            if os.path.exists(config):
+                return config
         
-        print(f"✅ 成功添加路径: {path_need_add} 到配置文件 {config_file_path}")
-        print(f"💡 请运行 'source {config_file_path}' 使配置生效")
-        return True
-        
-    except Exception as e:
-        print(f"❌ 添加路径时出错: {e}")
-        return False
-
-
-def remove_path_from_shrc(path_to_remove, config_file_path=os.path.expanduser("~/.zshrc")):
-    """
-    从shell配置文件中移除指定的路径
+        # 如果都不存在，使用 zshrc
+        return f"{home}/.zshrc"
     
-    Args:
-        path_to_remove (str): 需要从PATH中移除的路径
-        config_file_path (str, optional): 自定义配置文件路径，默认为None（使用~/.zshrc）
+    def _get_shell_name(self) -> str:
+        """获取 shell 名称"""
+        config_name = os.path.basename(self.config_file)
+        if 'zsh' in config_name:
+            return 'zsh'
+        elif 'bash' in config_name:
+            return 'bash'
+        elif 'fish' in config_name:
+            return 'fish'
+        else:
+            return 'shell'
     
-    Returns:
-        bool: 如果路径不存在返回False，成功移除返回True
-    """
-    try:
-        if not os.path.exists(config_file_path):
-            print(f"❌ 配置文件: {config_file_path} 不存在")
+    def _normalize_path(self, path: str) -> str:
+        """标准化路径"""
+        path = os.path.expanduser(path)
+        path = os.path.abspath(path)
+        return path.rstrip('/')
+    
+    def _get_export_patterns(self, path: str) -> List[str]:
+        """获取路径导出模式"""
+        if self.shell == 'fish':
+            return [
+                f'set -gx PATH "{path}" $PATH',
+                f'set -gx PATH $PATH "{path}"'
+            ]
+        else:
+            return [
+                f'export PATH="{path}:$PATH"',
+                f'export PATH="$PATH:{path}"',
+                f"export PATH='{path}:$PATH'",
+                f"export PATH='$PATH:{path}'",
+                f'export PATH="{path}:$PATH" # Added by path manager',
+                f'export PATH="$PATH:{path}" # Added by path manager'
+            ]
+    
+    def _create_config_if_not_exists(self):
+        """如果配置文件不存在则创建"""
+        config_path = Path(self.config_file)
+        config_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        if not config_path.exists():
+            with open(config_path, 'w', encoding='utf-8') as f:
+                f.write(f"# {self.shell_name} configuration file\n")
+                f.write(f"# Generated by path manager\n\n")
+            print(f"📁 创建新的配置文件: {self.config_file}")
+    
+    def add_path(self, path_need_add: str, ask_create: bool = True, position: str = "prepend") -> bool:
+        """
+        添加路径到 PATH 环境变量
+        
+        Args:
+            path_need_add: 需要添加的路径
+            ask_create: 如果路径不存在是否询问创建
+            position: 路径添加位置，"prepend"（前置）或 "append"（追加）
+            
+        Returns:
+            bool: 是否成功添加
+        """
+        try:
+            # 标准化路径
+            path_need_add = self._normalize_path(path_need_add)
+            
+            # 检查路径是否存在
+            if not os.path.exists(path_need_add):
+                if ask_create:
+                    create_dir = input(f"📁 路径 {path_need_add} 不存在，是否创建？(y/N): ").strip().lower()
+                    if create_dir in ['y', 'yes']:
+                        os.makedirs(path_need_add, exist_ok=True)
+                        print(f"✅ 已创建目录: {path_need_add}")
+                    else:
+                        print(f"⚠️  路径 {path_need_add} 不存在，跳过添加")
+                        return False
+                else:
+                    print(f"⚠️  路径 {path_need_add} 不存在，跳过添加")
+                    return False
+            
+            # 确保配置文件存在
+            self._create_config_if_not_exists()
+            
+            # 读取当前配置
+            with open(self.config_file, "r", encoding='utf-8') as f:
+                content = f.read()
+            
+            # 检查路径是否已经存在
+            patterns = self._get_export_patterns(path_need_add)
+            for pattern in patterns:
+                if pattern.split('#')[0].strip() in content:
+                    print(f"ℹ️  路径 {path_need_add} 已经存在于配置文件 {self.config_file} 中")
+                    return False
+            
+            # 添加路径
+            with open(self.config_file, "a", encoding='utf-8') as f:
+                if self.shell == 'fish':
+                    f.write(f'\n# Add {path_need_add} to PATH\n')
+                    if position == "prepend":
+                        f.write(f'set -gx PATH "{path_need_add}" $PATH\n')
+                    else:
+                        f.write(f'set -gx PATH $PATH "{path_need_add}"\n')
+                else:
+                    f.write(f'\n# Add {path_need_add} to PATH\n')
+                    if position == "prepend":
+                        f.write(f'export PATH="{path_need_add}:$PATH"  # Added by path manager\n')
+                    else:
+                        f.write(f'export PATH="$PATH:{path_need_add}"  # Added by path manager\n')
+            
+            print(f"✅ 成功添加路径: {path_need_add} 到配置文件 {self.config_file}")
+            print(f"💡 请运行 'source {self.config_file}' 或重新启动终端使配置生效")
+            
+            # 显示当前 PATH
+            self.show_current_path()
+            return True
+            
+        except Exception as e:
+            print(f"❌ 添加路径时出错: {e}")
             return False
+    
+    def remove_path(self, path_to_remove: str) -> bool:
+        """
+        从 PATH 中移除路径
         
-        # 标准化路径
-        path_to_remove = os.path.expanduser(path_to_remove)
-        path_to_remove = os.path.abspath(path_to_remove)
+        Args:
+            path_to_remove: 需要移除的路径
+            
+        Returns:
+            bool: 是否成功移除
+        """
+        try:
+            if not os.path.exists(self.config_file):
+                print(f"❌ 配置文件 {self.config_file} 不存在")
+                return False
+            
+            # 标准化路径
+            path_to_remove = self._normalize_path(path_to_remove)
+            
+            # 读取文件内容
+            with open(self.config_file, "r", encoding='utf-8') as f:
+                lines = f.readlines()
+            
+            # 查找并移除包含指定路径的行
+            original_length = len(lines)
+            new_lines = []
+            removed = False
+            
+            i = 0
+            while i < len(lines):
+                line = lines[i]
+                line_stripped = line.split('#')[0].strip()
+                
+                # 检查是否是路径相关的行
+                patterns = self._get_export_patterns(path_to_remove)
+                is_path_line = any(pattern.split('#')[0].strip() == line_stripped for pattern in patterns)
+                
+                # 检查是否是注释部分
+                is_comment_line = f"# Add {path_to_remove} to PATH" in line
+                
+                if is_path_line or is_comment_line:
+                    removed = True
+                    # 跳过这一行
+                    i += 1
+                    continue
+                
+                new_lines.append(line)
+                i += 1
+            
+            # 如果内容有变化，则写回文件
+            if removed:
+                with open(self.config_file, "w", encoding='utf-8') as f:
+                    f.writelines(new_lines)
+                print(f"✅ 成功移除路径: {path_to_remove} 从配置文件: {self.config_file}")
+                return True
+            else:
+                print(f"⚠️  路径: {path_to_remove} 不存在于配置文件中")
+                return False
+                
+        except Exception as e:
+            print(f"❌ 移除路径时出错: {e}")
+            return False
+    
+    def show_current_path(self):
+        """显示当前 PATH 设置"""
+        print(f"\n📋 当前 PATH 环境变量:")
+        current_path = os.environ.get('PATH', '')
+        if not current_path:
+            print("  ℹ️  PATH 环境变量为空")
+            return
+            
+        paths = current_path.split(':')
+        for i, path in enumerate(paths, 1):
+            exists = " ✅" if os.path.exists(path) else " ❌"
+            print(f"  {i:2d}. {path}{exists}")
+    
+    def list_managed_paths(self):
+        """列出所有管理的路径"""
+        if not os.path.exists(self.config_file):
+            print(f"❌ 配置文件 {self.config_file} 不存在")
+            return
         
-        # 读取文件内容
-        with open(config_file_path, "r") as f:
+        print(f"\n📁 在 {self.config_file} 中管理的路径:")
+        with open(self.config_file, "r", encoding='utf-8') as f:
             lines = f.readlines()
         
-        # 查找并移除包含指定路径的行（支持多种格式）
-        original_length = len(lines)
-        new_lines = []
-        removed = False
+        found = False
+        current_section = None
         
         for line in lines:
-            if any(pattern in line for pattern in [
-                f'export PATH="{path_to_remove}:$PATH"',
-                f'export PATH="$PATH:{path_to_remove}"',
-                f"export PATH='{path_to_remove}:$PATH'",
-                f"export PATH='$PATH:{path_to_remove}'"
-            ]):
-                removed = True
-                continue
-            new_lines.append(line)
+            line = line.strip()
+            if line.startswith('# Add ') and ' to PATH' in line:
+                current_section = line.replace('# Add ', '').replace(' to PATH', '')
+            elif line and current_section:
+                if line.startswith('export PATH=') or line.startswith('set -gx PATH'):
+                    print(f"  📍 {current_section}")
+                    print(f"     命令: {line}")
+                    found = True
+                    current_section = None
         
-        # 如果内容有变化，则写回文件
-        if removed:
-            with open(config_file_path, "w") as f:
-                f.writelines(new_lines)
-            print(f"✅ 成功移除路径: {path_to_remove} 从配置文件: {config_file_path} 中")
-            return True
+        if not found:
+            print("  ℹ️  没有找到由本工具管理的路径")
+    
+    def validate_paths(self) -> List[Tuple[str, bool]]:
+        """
+        验证所有管理的路径是否存在
+        
+        Returns:
+            List[Tuple[str, bool]]: 路径和是否存在的元组列表
+        """
+        if not os.path.exists(self.config_file):
+            return []
+        
+        results = []
+        with open(self.config_file, "r", encoding='utf-8') as f:
+            lines = f.readlines()
+        
+        current_path = None
+        for line in lines:
+            line = line.strip()
+            if line.startswith('# Add ') and ' to PATH' in line:
+                current_path = line.replace('# Add ', '').replace(' to PATH', '')
+            elif line and current_path and (line.startswith('export PATH=') or line.startswith('set -gx PATH')):
+                exists = os.path.exists(current_path)
+                results.append((current_path, exists))
+                current_path = None
+        
+        return results
+    
+    def cleanup_invalid_paths(self) -> int:
+        """
+        清理无效的路径（不存在的路径）
+        
+        Returns:
+            int: 清理的路径数量
+        """
+        invalid_paths = [path for path, exists in self.validate_paths() if not exists]
+        
+        if not invalid_paths:
+            print("✅ 没有找到无效路径")
+            return 0
+        
+        print(f"🔍 找到 {len(invalid_paths)} 个无效路径:")
+        for path in invalid_paths:
+            print(f"  ❌ {path}")
+        
+        confirm = input(f"\n是否移除这些无效路径？(y/N): ").strip().lower()
+        if confirm in ['y', 'yes']:
+            removed_count = 0
+            for path in invalid_paths:
+                if self.remove_path(path):
+                    removed_count += 1
+            print(f"✅ 已移除 {removed_count} 个无效路径")
+            return removed_count
         else:
-            print(f"⚠️  路径: {path_to_remove} 不存在于配置文件中")
-            return False
-            
-    except Exception as e:
-        print(f"❌ 移除路径时出错: {e}")
-        return False
-def main(): 
-    # 添加参数
-    import argparse
-    parser = argparse.ArgumentParser(description="Add or remove path to shell configuration file")
-    parser.add_argument("path", help="Path to add or remove from PATH")
-    parser.add_argument("--remove", action="store_true", help="Remove path instead of adding")
+            print("⚠️  已取消清理操作")
+            return 0
+    
+    @property
+    def shell(self) -> str:
+        """获取 shell 类型"""
+        return self.shell_name
+
+
+def main():
+    """主函数"""
+    parser = argparse.ArgumentParser(
+        description="PATH 环境变量管理工具",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+使用示例:
+  %(prog)s /usr/local/bin              # 添加路径
+  %(prog)s /usr/local/bin --remove     # 移除路径
+  %(prog)s --list                      # 列出管理的路径
+  %(prog)s --show                      # 显示当前 PATH
+  %(prog)s --validate                  # 验证路径有效性
+  %(prog)s --cleanup                   # 清理无效路径
+  %(prog)s ~/myapp/bin --config ~/.bashrc  # 指定配置文件
+  %(prog)s ~/myapp/bin --append        # 追加路径（默认前置）
+        """
+    )
+    
+    parser.add_argument("path", nargs="?", help="要添加或移除的路径")
+    parser.add_argument("--remove", action="store_true", help="移除路径而不是添加")
+    parser.add_argument("--list", action="store_true", help="列出所有管理的路径")
+    parser.add_argument("--show", action="store_true", help="显示当前 PATH 环境变量")
+    parser.add_argument("--validate", action="store_true", help="验证所有管理的路径是否存在")
+    parser.add_argument("--cleanup", action="store_true", help="清理无效的路径")
+    parser.add_argument("--config", help="指定配置文件路径")
+    parser.add_argument("--force", action="store_true", help="不询问直接创建不存在的目录")
+    parser.add_argument("--append", action="store_true", help="将路径追加到 PATH（默认前置）")
+    
     args = parser.parse_args()
-    # 调用函数
-    if args.remove:
-        remove_path_from_shrc(args.path)
+    
+    # 创建路径管理器
+    manager = PathManager(args.config)
+    print(f"🎯 使用配置文件: {manager.config_file} ({manager.shell})")
+    
+    # 确定路径添加位置
+    position = "append" if args.append else "prepend"
+    
+    if args.list:
+        manager.list_managed_paths()
+    elif args.show:
+        manager.show_current_path()
+    elif args.validate:
+        results = manager.validate_paths()
+        if results:
+            print(f"\n🔍 路径验证结果:")
+            for path, exists in results:
+                status = "✅ 存在" if exists else "❌ 不存在"
+                print(f"  {status}: {path}")
+        else:
+            print("ℹ️  没有找到管理的路径")
+    elif args.cleanup:
+        manager.cleanup_invalid_paths()
+    elif args.path:
+        if args.remove:
+            manager.remove_path(args.path)
+        else:
+            manager.add_path(args.path, ask_create=not args.force, position=position)
     else:
-        add_path_to_shrc(args.path)
+        parser.print_help()
 
 
 if __name__ == "__main__":
