@@ -4,7 +4,7 @@
 # folder/
 # # 忽略所有 .log 文件
 *.log
-
+git_sync/
 USER/
 backup_data/
 bin/
