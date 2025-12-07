@@ -1,7 +1,10 @@
-#!/usr/bin/env bash
-set -euo pipefail                     # 脚本一出错就退出，超级安全
+#!/usr/bin/bash
+# >>> safe_mode_begin
+set -euo pipefail
+# <<< safe_mode_end
+
 IFS=$'\n\t'                           # 防止文件名带空格被拆开
-# ====================== 颜色定义（只定义一次） ======================
+# >>> color_definition_begin
 RED='\033[31m'
 GREEN='\033[32m'
 YELLOW='\033[33m'
@@ -10,13 +13,14 @@ MAGENTA='\033[35m'
 CYAN='\033[36m'
 BOLD='\033[1m'
 NC='\033[0m' # No Color
+# <<< color_definition_end
 
-# =====================定义日志文件名==========================
+# >>> log_filename_definition_begin
 filename=$(basename "$0")
 LOGFILE="./log/${filename}.log"
 mkdir -p "$(dirname "$LOGFILE")"
-# ====================== 日志函数终极版 ======================
-
+# <<< log_filename_definition_end
+# >>> log_function_ultimate_begin
 log_info() {
     local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
     echo -e "==============================\n${CYAN}[ ${timestamp} ] ${BLUE}INFO  $1${NC}" | tee -a "$LOGFILE"
@@ -31,7 +35,11 @@ log_error() {
     local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
     echo -e "${CYAN}[ ${timestamp}] ${RED}ERROR  $1${NC}" | tee -a "$LOGFILE" >&2
 }
-# ==================== 执行命令神器（取代 run_cmd） ====================
+# log_info "步骤开始"
+# log_success "执行成功"
+# log_error "执行失败"
+# <<< log_function_ultimate_end
+# >>> run_cmd_ultimate_begin
 run_cmd() {
     local description="$1"
     shift
@@ -48,10 +56,9 @@ run_cmd() {
         return $exit_code
     fi
 }
-
-# log_info "步骤开始"
-# log_success "执行成功"
-# log_error "执行失败"
 # run_cmd "安装pip..." sudo pacman -Sy --needed --noconfirm python-pip 
-# ======================LOCAL_IP=========================
+# <<< run_cmd_ultimate_end
+
+# >>> local_ip_ultimate_begin
 LOCAL_IP=$(ip route get 1 | awk '{print $7; exit}')
+# <<< local_ip_ultimate_end
