@@ -3,6 +3,7 @@
 # # 忽略整个文件夹及其所有内容
 # folder/
 # # 忽略所有 .log 文件
+data/
 *.log
 git_sync/
 USER/
