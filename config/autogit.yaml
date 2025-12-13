@@ -1,0 +1,13 @@
+# autogit.yaml - Git 自动同步配置
+
+repos:
+  - path: /data/0Manjaro
+    branch: main
+  - path: /data/manjaro_kde_conf
+    branch: main
+  - path: /data/manjaro_basic_conf
+    branch: main
+  - path: /data/manjaro_software_conf
+    branch: main
+
+commit_msg: "Auto sync"
