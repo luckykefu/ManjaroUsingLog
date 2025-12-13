@@ -1,7 +1,8 @@
 #!/bin/bash
 # autogit.sh
 
-CONFIG=${1:-config/autogit.yaml}
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CONFIG=${1:-$SCRIPT_DIR/config/autogit.yaml}
 
 if [ ! -f "$CONFIG" ]; then
     echo "✗ 配置文件不存在: $CONFIG"
@@ -20,6 +21,8 @@ for ((i=0; i<REPO_COUNT; i++)); do
     repo=$(yq -r ".repos[$i].path" "$CONFIG")
     branch=$(yq -r ".repos[$i].branch" "$CONFIG")
     
+    [ -z "$repo" ] && continue
+    
     echo "=== $repo [$branch] ==="
     
     [ ! -d "$repo" ] && { echo "✗ 不存在"; continue; }
@@ -29,6 +32,6 @@ for ((i=0; i<REPO_COUNT; i++)); do
     [ -z "$(git status --porcelain)" ] && { echo "无变更"; continue; }
     
     git add -A
-    git commit -m "$COMMIT_MSG: $(date '+%Y-%m-%d %H:%M:%S')"
+    git commit --no-gpg-sign -m "$COMMIT_MSG: $(date '+%Y-%m-%d %H:%M:%S')" 2>/dev/null || true
     git push origin "$branch" && echo "✓ 完成" || echo "✗ 失败"
 done
