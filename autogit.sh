@@ -32,6 +32,6 @@ for ((i=0; i<REPO_COUNT; i++)); do
     [ -z "$(git status --porcelain)" ] && { echo "无变更"; continue; }
     
     git add -A
-    git commit --no-gpg-sign -m "$COMMIT_MSG: $(date '+%Y-%m-%d %H:%M:%S')" 2>/dev/null || true
+    git commit -m "$COMMIT_MSG: $(date '+%Y-%m-%d %H:%M:%S')" 2>/dev/null || true
     git push origin "$branch" && echo "✓ 完成" || echo "✗ 失败"
 done
