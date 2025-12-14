@@ -2,7 +2,7 @@
 set -e
 
 git_auto_sync() {
-    local repo_path="$1"
+    local repo_path="${1:-$(pwd)}"
     local branch="${2:-main}"
     local message="${3:-auto run $(date +%Y/%m/%d-%H:%M:%S)}"
     local push="${4:-true}"
@@ -51,6 +51,10 @@ git_auto_sync() {
         echo "ℹ️ No changes to commit"
     fi
 }
-
+# 检查是否被直接执行
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    # 直接执行时运行函数
+    git_auto_sync "$@"
+fi
 # 使用示例
 # git_auto_sync "$(pwd)"
