@@ -1,3 +1,0 @@
-# 要自动运行的脚本列表
-autorun:
-  - autogit.sh # Git 自动同步
