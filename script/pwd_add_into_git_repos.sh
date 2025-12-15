@@ -1,4 +1,14 @@
 #!/bin/bash
+# ============================================================================
+# Script: pwd_add_into_git_repos.sh
+# Description: Add current working directory to git repositories list
+# Logic: Checks if current directory already exists in config file,
+#        if not, appends it to the list and displays all repositories
+# ============================================================================
+# 脚本: pwd_add_into_git_repos.sh
+# 描述: 将当前工作目录添加到 git 仓库列表
+# 逻辑: 检查当前目录是否已存在于配置文件中，如果不存在，将其附加到列表并显示所有仓库
+# ============================================================================
 
 #--> Add current directory to git repos list --> 将当前目录添加到 git 仓库列表
 pwd_to_git_repos() {

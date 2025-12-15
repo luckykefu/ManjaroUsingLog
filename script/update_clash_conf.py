@@ -1,3 +1,16 @@
+# ============================================================================
+# Script: update_clash_conf.py
+# Description: Convert Shadowsocks config to Clash config format
+# Logic: Creates default Clash template with proxy groups and rules,
+#        converts Shadowsocks JSON to Clash proxy format, merges into template,
+#        generates complete Clash YAML configuration file
+# ============================================================================
+# 脚本: update_clash_conf.py
+# 描述: 将 Shadowsocks 配置转换为 Clash 配置格式
+# 逻辑: 创建包含代理组和规则的默认 Clash 模板，将 Shadowsocks JSON 转换为
+#        Clash 代理格式，合并到模板，生成完整的 Clash YAML 配置文件
+# ============================================================================
+
 import yaml
 import json
 from pathlib import Path

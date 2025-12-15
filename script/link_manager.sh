@@ -1,4 +1,16 @@
-#!/bin/bash  # 指定使用bash解释器的shebang行
+#!/bin/bash
+# ============================================================================
+# Script: link_manager.sh
+# Description: Manage symbolic links between source and target directories
+# Logic: Scans source directory for subdirectories, creates symbolic links
+#        in target directory, handles existing files/dirs/links with user
+#        confirmation, validates and creates proper symlinks
+# ============================================================================
+# 脚本: link_manager.sh
+# 描述: 管理源目录和目标目录之间的符号链接
+# 逻辑: 扫描源目录的子目录，在目标目录中创建符号链接，处理现有文件/目录/链接
+#        并要求用户确认，验证并创建正确的符号链接
+# ============================================================================
 
 manage_links() {  # 定义管理符号链接的函数
     local source_dir="$1"  # 获取源目录参数
